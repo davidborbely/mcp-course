@@ -1,0 +1,4 @@
+/Users/davidborbely/Desktop/mcp-course/binance_mcp/binance_mcp.py
+/Users/davidborbely/Desktop/mcp-course/binance_mcp/binance_mcp_w_resource.py
+
+/Users/davidborbely/Desktop/mcp-course/.venv/bin/python3

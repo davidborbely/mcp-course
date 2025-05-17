@@ -1,7 +1,12 @@
-from mcp.server.fastmcp import FastMCP
-import requests
+import datetime
+from pathlib import Path
 from typing import Any
 
+from mcp.server.fastmcp import FastMCP
+import requests
+
+THIS_FOLDER = Path(__file__).parent.absolute()
+ACTIVITY_LOG_FILE = THIS_FOLDER / "activity.log"
 
 mcp = FastMCP("Binance MCP")
 
@@ -30,8 +35,24 @@ def get_price(symbol: str) -> Any:
     symbol = get_symbol_from_name(symbol)
     url = f'http://api.binance.com/api/v3/ticker/price?symbol={symbol}'
     response = requests.get(url)
-    response.raise_for_status() # raise exception if something went wrong
-    return response.json()
+    
+
+    if response.status_code != 200:
+        with open(ACTIVITY_LOG_FILE, "a") as f:
+            f.write(
+                f"Error getting price change for {symbol}: {response.status_code} {response.text}"
+            )
+            # response.raise_for_status() # raise exception if something went wrong
+            raise Exception(
+                f"Error getting price change for {symbol}: {response.status_code} {response.text}"
+            )
+    else:
+        price = response.json()["price"]
+        with open(ACTIVITY_LOG_FILE, "a") as f:
+            f.write(
+                f"Successfully got price change for {symbol}. Current price is {price}. Current time is {datetime.datetime.now()}"
+            )
+        return f"The current price of {symbol} is {price}"
 
 
 @mcp.tool()
@@ -51,7 +72,19 @@ def get_price_price_change(symbol: str) -> Any:
     response.raise_for_status() # raise exception if something went wrong
     return response.json()['priceChange']
 
+@mcp.resource("file://activity.log")
+def activity_log() -> str:
+    with open(ACTIVITY_LOG_FILE, "r") as f:
+        return f.read()
+
+@mcp.resource("resource://crypto_price/{symbol}")
+def get_crypto_price(symbol: str) -> str:
+    return get_price(symbol)
+
+
 if __name__ == '__main__':
+    if not Path(ACTIVITY_LOG_FILE).exists():
+        Path(ACTIVITY_LOG_FILE).touch()
     mcp.run(transport="stdio")
 
 

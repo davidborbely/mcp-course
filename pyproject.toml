@@ -19,6 +19,8 @@ dependencies = [
     "langchain-mcp-adapters==0.0.9",
     "langgraph==0.4.3",
     "langchain-google-genai==2.0.10",
+    "fastmcp==2.2.6",
+    "click<8.2.0",
     ]
 
 [tool.ruff]
