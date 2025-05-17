@@ -1,5 +1,5 @@
 {
-  "name": "zoltanctoth-course-binancemcp",
+  "name": "davidmborbely-course-binancemcp",
   "version": "1.0.0",
   "description": "MCP server that provides Binance price data",
   "main": "dist/binance_mcp.js",
